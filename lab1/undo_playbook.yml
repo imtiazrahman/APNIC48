@@ -1,0 +1,52 @@
+---
+
+- name: PLAY-START
+  hosts: servers
+  gather_facts: yes
+  become: yes
+  become_user: root
+
+  tasks:
+      
+      - name: Undo Disallow password authentication for Ubuntu server
+        lineinfile: dest=/etc/ssh/sshd_config
+                    regexp="^PasswordAuthentication no"
+                    line="PasswordAuthentication yes"
+                    state=present
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_release == "bionic"
+        notify: Restart ssh
+      
+      - name: Undo Disallow password authentication for CentOS server
+        lineinfile: dest=/etc/ssh/sshd_config
+                    regexp="^PasswordAuthentication no"
+                    line="#PasswordAuthentication yes"
+                    state=present
+        when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+        notify: Restart ssh
+
+      - name: Undo Disallow root SSH access for Ubuntu server
+        lineinfile: dest=/etc/ssh/sshd_config
+                    regexp="^PermitRootLogin no"
+                    line="PermitRootLogin prohibit-password"
+                    state=present
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_release == "bionic"
+        notify: Restart ssh
+
+      - name: Undo Disallow root SSH access for CentOS server
+        lineinfile: dest=/etc/ssh/sshd_config
+                    regexp="^PermitRootLogin no"
+                    line="#PermitRootLogin yes"
+                    state=present
+        when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+        notify: Restart ssh
+        
+      - name: Undo Timeout SSH Connection for All server
+        lineinfile: dest=/etc/ssh/sshd_config
+                    regexp="^ClientAliveInterval 300"
+                    line="#ClientAliveInterval 0"
+                    state=present
+        notify: Restart ssh
+
+  handlers:
+  - name: Restart ssh
+    service: name=sshd state=restarted

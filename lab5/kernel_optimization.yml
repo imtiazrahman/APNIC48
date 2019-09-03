@@ -1,0 +1,28 @@
+---
+
+- hosts: servers
+  gather_facts: no
+  become: yes
+  become_user: root
+
+  tasks:
+  - name: CHECK for IP FORWARDING STATUS
+    shell: "sysctl net.ipv4.ip_forward=1"
+    register: result
+
+  - debug:
+      msg: "{{ result.stdout_lines|list }}"
+  
+  - name: CHECK for SYNCOOKIES
+    shell: "sysctl net.ipv4.tcp_syncookies=0"
+    register: result
+
+  - debug:
+      msg: "{{ result.stdout_lines|list }}"
+
+  - name: CHECK for Reverse Path Filtering 
+    shell: "sysctl -ar '\\.rp_filter'"
+    register: result
+
+  - debug:
+      msg: "{{ result.stdout_lines|list }}"

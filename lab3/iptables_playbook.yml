@@ -1,0 +1,55 @@
+---
+
+- name: PLAY-START
+  hosts: web2
+  gather_facts: no
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Allow related and established connections
+      iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+
+    - name: Allow port 22/SSH traffic
+      iptables:
+        chain: INPUT
+        destination_port: 22
+        source: "{{ item }}"
+        jump: ACCEPT
+        protocol: tcp
+      with_items:
+          - 192.168.56.10
+          - 10.33.154.1
+
+    - name: Allow port 80/HTTP traffic
+      iptables:
+        chain: INPUT
+        destination_port: 80
+        jump: ACCEPT
+        protocol: tcp
+
+    - name: Allow port 443/HTTPS traffic
+      iptables:
+        chain: INPUT
+        destination_port: 443
+        jump: ACCEPT
+        protocol: tcp
+
+    - name: Allow port 25/SMTP traffic
+      iptables:
+        chain: INPUT
+        destination_port: 25
+        jump: ACCEPT
+        protocol: tcp
+
+        #    - name: Drop traffic without rule
+        #iptables:
+        #chain: INPUT
+        #jump: DROP
+    - name: Set the policy for the INPUT chain to DROP
+      iptables:
+        chain: INPUT
+        policy: DROP

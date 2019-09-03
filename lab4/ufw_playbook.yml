@@ -1,0 +1,50 @@
+---
+
+- hosts: web1
+  gather_facts: no
+  become: yes
+  become_user: root
+
+  tasks:
+  - name: Allow everything and enable UFW
+    ufw:
+      state: enabled
+      policy: allow
+      direction: outgoing
+
+  - name: Set logging
+    ufw:
+      logging: on
+
+  - name: Allow ssh access from admins IP to this host
+    ufw:
+      rule: allow
+      src: '{{ item }}'
+      proto: tcp
+      port: 22
+    loop:
+      - 192.168.56.10/32
+      - 10.33.154.1/32
+
+  - name: Allow mysql access IP to this host
+    ufw:
+      rule: allow
+      src: '{{ item }}'
+      proto: tcp
+      port: 3306
+    loop:
+      - 192.168.56.10/32
+      - 10.33.154.1/32
+
+  - name: Allow custom port 8080 to this host
+    ufw:
+      rule: allow
+      proto: tcp
+      port: 8080
+
+  - name: Allow https access to this host
+    ufw:
+      rule: allow
+      proto: tcp
+      port: 443
+

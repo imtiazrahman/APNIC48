@@ -1,0 +1,29 @@
+---
+
+- name: PLAY-START
+  hosts: servers
+  gather_facts: no
+  become: yes
+  become_user: root
+  
+  vars:
+
+     self_signed_certs:
+     - key: /etc/ssl/key/ansible_server.key
+       cert: /etc/ssl/crt/ansible_server.crt
+  
+  tasks:
+      - name: ansible create directory for key and cert
+        file:
+          path: "{{ item }}"
+          state: directory
+        with_items:
+           - '/etc/ssl/key'
+           - '/etc/ssl/crt'
+
+      - name: Create self-signed certificate
+        command: >
+          openssl req -x509 -nodes -subj '/CN={{ ansible_host }}' -days 365
+          -newkey rsa:4096 -sha256 -keyout {{ item.key }} -out {{ item.cert }}
+          creates={{ item.cert }}
+        with_items: "{{ self_signed_certs }}"
