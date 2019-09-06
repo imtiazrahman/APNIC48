@@ -16,7 +16,7 @@
     - name: Allow port 22/SSH traffic
       iptables:
         chain: INPUT
-        destination_port: 22
+        destination_port: '22'
         source: "{{ item }}"
         jump: ACCEPT
         protocol: tcp
@@ -27,21 +27,21 @@
     - name: Allow port 80/HTTP traffic
       iptables:
         chain: INPUT
-        destination_port: 80
+        destination_port: '80'
         jump: ACCEPT
         protocol: tcp
 
     - name: Allow port 443/HTTPS traffic
       iptables:
         chain: INPUT
-        destination_port: 443
+        destination_port: '443'
         jump: ACCEPT
         protocol: tcp
 
     - name: Allow port 25/SMTP traffic
       iptables:
         chain: INPUT
-        destination_port: 25
+        destination_port: '25'
         jump: ACCEPT
         protocol: tcp
 
