@@ -21,8 +21,7 @@
         jump: ACCEPT
         protocol: tcp
       with_items:
-          - 192.168.56.10
-          - 10.33.154.1
+          - 10.165.18.140
 
     - name: Allow port 80/HTTP traffic
       iptables:
