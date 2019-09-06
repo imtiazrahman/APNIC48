@@ -1,7 +1,7 @@
 ---
 
 - name: PLAY-START
-  hosts: web2
+  hosts: server2
   gather_facts: no
   become: yes
   become_user: root
